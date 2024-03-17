@@ -1,5 +1,8 @@
 import { instance } from "../server.js";
 import crypto from "crypto";
+import { config } from "dotenv";
+
+config({ path: "./config/config.env" });
 
 export const checkout = async (req, res) => {
   const options = {
@@ -29,7 +32,7 @@ export const paymentVerification = async (req, res) => {
 
   if (paymentIsAuthentic) {
     res.redirect(
-      `http://localhost:1234/paymentSuccess?reference=${razorpay_payment_id}`
+      `${process.env.BASE_URL}/paymentSuccess?reference=${razorpay_payment_id}`
     );
   } else {
     res.status(400).json({
