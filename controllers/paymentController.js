@@ -18,25 +18,30 @@ export const checkout = async (req, res) => {
 };
 
 export const paymentVerification = async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
 
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
 
-  const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
-    .update(body.toString())
-    .digest("hex");
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
+      .update(body.toString())
+      .digest("hex");
 
-  const paymentIsAuthentic = expectedSignature === razorpay_signature;
+    const paymentIsAuthentic = expectedSignature === razorpay_signature;
 
-  if (paymentIsAuthentic) {
-    res.redirect(
-      `${process.env.CLIENT_URL}/paymentSuccess?reference=${razorpay_payment_id}`
-    );
-  } else {
-    res.status(400).json({
-      success: true,
-    });
+    if (paymentIsAuthentic) {
+      res.redirect(
+        `${process.env.CLIENT_URL}/paymentSuccess?reference=${razorpay_payment_id}`
+      );
+    } else {
+      res
+        .status(400)
+        .json({ success: false, error: "Payment verification failed" });
+    }
+  } catch (error) {
+    console.error("Error in paymentVerification:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
