@@ -33,7 +33,7 @@ export const paymentVerification = async (req, res) => {
 
     if (paymentIsAuthentic) {
       res.redirect(
-        `${process.env.CLIENT_URL}/paymentSuccess?reference=${razorpay_payment_id}`
+        `https://${process.env.CLIENT_URL}/paymentSuccess?reference=${razorpay_payment_id}`
       );
     } else {
       res
